@@ -1,0 +1,26 @@
+{
+	"name": "tooltipify",
+	"version": "0.1.0",
+	"title": "Tooltipify",
+	"description": "The tooltipify plugin creates a slide in stylable tooltip to replace the default browser tooltip.",
+	"keywords": [ "tooltipify", "tooltip", "title"  ],
+	"author": {
+		"name": "Vincent Keizer",
+		"email": "vincent@vicreative.nl",
+		"url" : "http://www.vicreative.nl/"
+	},
+	"licenses" : [ {
+			"type": "MIT",
+			"url": "http://opensource.org/licenses/MIT"
+		}, {
+			"type": "GPLv2",
+			"url": "http://opensource.org/licenses/GPL-2.0"
+		}
+	],
+	"dependencies": {
+		"jquery": ">=1.8.3"
+	},
+	"homepage": "http://www.vicreative.nl/Projects/Tooltipify",
+	"docs": "http://www.vicreative.nl/Projects/Tooltipify",
+	"demo": "http://www.vicreative.nl/Projects/Tooltipify"
+}
