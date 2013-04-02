@@ -15,6 +15,9 @@
         init: function (options) {
 
             var settings = $.extend({
+				'offsetLeft' : 0,
+				'offsetTop' : -7,
+				'opacity' : 0.8,
                 'animationDuration': 100,
                 'animationOffset': 50,
                 'openEvent': 'mouseover',
@@ -36,22 +39,28 @@
                             'opacity': '0'
                         }
                     }).append($('<span />', {
-                        'text': $this.attr('title')
+                        'text': $this.attr('title'),
+						'class': 'text'
+                    })).append($('<span />', {
+                        'class': 'icon'
                     }));
                     tooltip.bind('show', function () {
+						if ($(this).is(':visible')) { return; }
+					
                         var pos = $this.position();
-                        $(this).css({
-                            'top': pos.top - $this.outerHeight(),
-                            'left': pos.left - settings.animationOffset
-                        }).removeClass('hide')
-							   .show()
+                        $(this).show()
+							   .css({
+								'top': pos.top - ($(this).children('.text').outerHeight() + $(this).children('.icon').outerHeight() + settings.offsetTop),
+								'left': pos.left - settings.animationOffset
+							}).removeClass('hide')
 							   .animate({
-							       opacity: 1,
+							       opacity: settings.opacity,
 							       left: '+=' + settings.animationOffset,
 							   }, settings.animationDuration, function () {
 							       $(this).addClass('show');
 							   });
                     }).bind('hide', function () {
+						if (!$(this).is(':visible')) { return; }
                         $(this).removeClass('show')
 							   .animate({
 							       opacity: 0,
@@ -69,7 +78,8 @@
                     }).data('tooltipify', {
                         target: $this,
                         tooltipify: tooltip,
-                        title: $this.attr('title')
+                        title: $this.attr('title'),
+						settings : settings
                     }).attr('title', '');
                     $('body').append(tooltip);
                 }
@@ -81,6 +91,8 @@
 					data = $this.data('tooltipify');
                 if (data) {
                     $(window).unbind('.tooltipify');
+					$this.unbind(data.settings.openEvent);
+					$this.unbind(data.settings.closeEvent);
                     $this.attr('title', data.title);
                     data.tooltipify.remove();
                     $this.removeData('tooltipify')
@@ -91,7 +103,7 @@
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    data.tooltipify.focus();
+                    data.tooltipify.trigger("show");
                 }
             });
         },
@@ -99,7 +111,7 @@
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    data.tooltipify.blur();
+                    data.tooltipify.trigger("hide");
                 }
             });
         }
