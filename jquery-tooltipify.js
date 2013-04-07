@@ -11,9 +11,49 @@
  */
 (function ($) {
 
+    var _Events = {
+        show: function () {
+            var $this = $(this);
+            var data = $this.data('tooltipify');
+            var tooltip = data.tooltip;
+            // We don't need to show a already visible tooltip.
+            if (tooltip.is(':visible')) { return; }
+            var settings = data.settings;
+            var pos = $this.position();
+            tooltip.show()
+                   .css({
+                       // The height of the tooltip does not seem to be correct, count height of all children.
+                       'top': pos.top - (tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight() + settings.offsetTop),
+                       'left': pos.left - settings.animationOffset
+                   }).removeClass('hide')
+                   .animate({
+                       opacity: settings.opacity,
+                       left: '+=' + settings.animationOffset,
+                   }, settings.animationDuration, function () {
+                       $(this).addClass('show');
+                   })
+        },
+        hide: function () {
+            var $this = $(this);
+            var data = $this.data('tooltipify');
+            var tooltip = data.tooltip;
+            // We don't need to hide a already hidden tooltip.
+            if (!tooltip.is(':visible')) { return; }
+            var settings = data.settings;
+            tooltip.removeClass('show')
+                   .animate({
+                       opacity: 0,
+                       left: '-=' + settings.animationOffset,
+                   }, settings.animationDuration, function () {
+                       $(this).addClass('hide')
+                              .hide();
+                   });
+        }
+    }
+
     var methods = {
         init: function (options) {
-
+            // Extend arguments with defaults.
             var settings = $.extend({
 				'offsetLeft' : 0,
 				'offsetTop' : -7,
@@ -30,7 +70,7 @@
 
                 // If the plugin hasn't been initialized yet
                 if (!data) {
-
+                    // Create tooltip.
                     var tooltip = $('<div />', {
                         'class': 'tooltipify hide',
                         'css': {
@@ -40,83 +80,60 @@
                         }
                     }).append($('<span />', {
                         'text': $this.attr('title'),
-						'class': 'text'
+                        'class': 'text'
                     })).append($('<span />', {
                         'class': 'icon'
                     }));
-                    tooltip.bind('show', function () {
-						if ($(this).is(':visible')) { return; }
-					
-                        var pos = $this.position();
-                        $(this).show()
-							   .css({
-								'top': pos.top - ($(this).children('.text').outerHeight() + $(this).children('.icon').outerHeight() + settings.offsetTop),
-								'left': pos.left - settings.animationOffset
-							}).removeClass('hide')
-							   .animate({
-							       opacity: settings.opacity,
-							       left: '+=' + settings.animationOffset,
-							   }, settings.animationDuration, function () {
-							       $(this).addClass('show');
-							   });
-                    }).bind('hide', function () {
-						if (!$(this).is(':visible')) { return; }
-                        $(this).removeClass('show')
-							   .animate({
-							       opacity: 0,
-							       left: '-=' + settings.animationOffset,
-							   }, settings.animationDuration, function () {
-							       $(this).addClass('hide')
-										  .hide();
-							   });
-                    });
-
-                    $this.bind(settings.openEvent, function () {
-                        $(this).data().tooltipify.tooltipify.trigger('show');
-                    }).bind(settings.closeEvent, function () {
-                        $(this).data().tooltipify.tooltipify.trigger('hide');
-                    }).data('tooltipify', {
-                        target: $this,
-                        tooltipify: tooltip,
-                        title: $this.attr('title'),
-						settings : settings
-                    }).attr('title', '');
+                    // Bind show and hide events to original event.
+                    $this.bind(settings.openEvent, _Events.show)
+                         .bind(settings.closeEvent, _Events.hide)
+                         // Store all requiredn data.
+                         .data('tooltipify', {
+                             tooltip: tooltip,
+                             title: $this.attr('title'),
+                             settings: settings
+                         }).attr('title', '');
+                    // Append tooltip to end of body.
                     $('body').append(tooltip);
                 }
             });
         },
+        // Destroy and cleanup of tooltipify plugin.
         destroy: function () {
             return this.each(function () {
                 var $this = $(this),
 					data = $this.data('tooltipify');
                 if (data) {
                     $(window).unbind('.tooltipify');
-					$this.unbind(data.settings.openEvent);
-					$this.unbind(data.settings.closeEvent);
+					$this.unbind(data.settings.openEvent, _Events.show);
+					$this.unbind(data.settings.closeEvent, _Events.hide);
                     $this.attr('title', data.title);
-                    data.tooltipify.remove();
+                    data.tooltip.remove();
                     $this.removeData('tooltipify')
                 }
             });
         },
+        // Show event for displaying the tooltip.
         show: function () {
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    data.tooltipify.trigger("show");
+                    $(this).trigger(data.settings.openEvent);
                 }
             });
         },
+        // Hide event for hiding tooltip.
         hide: function () {
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    data.tooltipify.trigger("hide");
+                    $(this).trigger(data.settings.closeEvent);
                 }
             });
         }
     };
 
+    // Initializer of tooltipify plugin.
     $.fn.tooltipify = function (options) {
         var method = options;
         if (methods[method]) {
