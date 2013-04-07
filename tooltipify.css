@@ -17,6 +17,28 @@
     width: 0;
 }
 
+.tooltipify > span.icon.bottom
+{
+    border-color: transparent transparent #000;
+    top: -10px;
+}
+
+.tooltipify > span.icon.right
+{
+    border-color: transparent #000 transparent transparent;
+    margin-left: 0;
+    left:-12px;
+    top:5px;
+}
+
+.tooltipify > span.icon.left
+{
+    border-color: transparent transparent transparent #000;
+    margin-left: -3px;
+    left:100%;
+    top:5px;
+}
+
 .tooltipify > span.text
 {
 	background:#000;
