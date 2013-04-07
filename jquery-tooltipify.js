@@ -20,18 +20,24 @@
             if (tooltip.is(':visible')) { return; }
             var settings = data.settings;
             var pos = $this.position();
+            tooltip.css({
+                // The height of the tooltip does not seem to be correct, count height of all children.
+                'top': pos.top - (tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight() + settings.offsetTop),
+                'left': pos.left
+            });
+            // Create animation for animationProperty.
+            var animation = { opacity: settings.opacity };
+            if (settings.animationProperty)
+            {
+                var orgValue = parseInt(tooltip.css(settings.animationProperty).replace(/[^-\d\.]/g, ''));
+                tooltip.css(settings.animationProperty, orgValue - settings.animationOffset);
+                animation[settings.animationProperty] = '+=' + settings.animationOffset;
+            }
             tooltip.show()
-                   .css({
-                       // The height of the tooltip does not seem to be correct, count height of all children.
-                       'top': pos.top - (tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight() + settings.offsetTop),
-                       'left': pos.left - settings.animationOffset
-                   }).removeClass('hide')
-                   .animate({
-                       opacity: settings.opacity,
-                       left: '+=' + settings.animationOffset,
-                   }, settings.animationDuration, function () {
+                   .removeClass('hide')
+                   .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('show');
-                   })
+                   });
         },
         hide: function () {
             var $this = $(this);
@@ -40,11 +46,13 @@
             // We don't need to hide a already hidden tooltip.
             if (!tooltip.is(':visible')) { return; }
             var settings = data.settings;
+            // Create animation for animationProperty
+            var animation = { opacity: 0 };
+            if (settings.animationProperty) {
+                animation[settings.animationProperty] = '-=' + settings.animationOffset;
+            }
             tooltip.removeClass('show')
-                   .animate({
-                       opacity: 0,
-                       left: '-=' + settings.animationOffset,
-                   }, settings.animationDuration, function () {
+                   .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('hide')
                               .hide();
                    });
@@ -56,10 +64,11 @@
             // Extend arguments with defaults.
             var settings = $.extend({
 				'offsetLeft' : 0,
-				'offsetTop' : -7,
-				'opacity' : 0.8,
-                'animationDuration': 100,
+				'offsetTop' : 0,
+				'opacity': 0.8,
+                'animationProperty': 'left',
                 'animationOffset': 50,
+                'animationDuration': 100,
                 'openEvent': 'mouseover',
                 'closeEvent': 'mouseout',
             }, options);
