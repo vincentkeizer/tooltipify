@@ -124,7 +124,7 @@
                 if (!data) {
                     // Create tooltip.
                     var tooltip = $('<div />', {
-                        'class': 'tooltipify hide',
+                        'class': 'tooltipify hide ' + settings.position,
                         'css': {
                             'position': 'absolute',
                             'display': 'none',
@@ -134,7 +134,7 @@
                         'text': $this.attr('title'),
                         'class': 'text'
                     })).append($('<span />', {
-                        'class': 'icon ' + settings.position
+                        'class': 'icon' 
                     }));
                     // Bind show and hide events to original event.
                     $this.bind(settings.openEvent, _events.show)
@@ -143,8 +143,13 @@
                          .data('tooltipify', {
                              tooltip: tooltip,
                              title: $this.attr('title'),
+                             tabindex: $this.attr('tabindex'),
                              settings: settings
                          }).attr('title', '');
+
+                    if (!$this.attr('tabindex')) {
+                        $this.attr('tabindex', '0'); // Used for events like 'focus' and 'focusout'
+                    }
                     // Append tooltip to end of body.
                     $('body').append(tooltip);
                 }
@@ -157,9 +162,10 @@
 					data = $this.data('tooltipify');
                 if (data) {
                     $(window).unbind('.tooltipify');
-                    $this.unbind(data.settings.openEvent, _events.show);
-                    $this.unbind(data.settings.closeEvent, _events.hide);
-                    $this.attr('title', data.title);
+                    $this.unbind(data.settings.openEvent, _events.show)
+                         .unbind(data.settings.closeEvent, _events.hide)
+                         .attr('title', data.title)
+                         .attr('tabindex', data.tabindex);
                     data.tooltip.remove();
                     $this.removeData('tooltipify')
                 }

@@ -1,3 +1,11 @@
+.tooltipify.top {
+    margin-top:-5px;
+}
+
+.tooltipify.left {
+    margin-left:-10px;
+}
+
 .tooltipify > span.icon {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
@@ -17,13 +25,13 @@
     width: 0;
 }
 
-.tooltipify > span.icon.bottom
+.tooltipify.bottom > span.icon
 {
     border-color: transparent transparent #000;
     top: -10px;
 }
 
-.tooltipify > span.icon.right
+.tooltipify.right > span.icon
 {
     border-color: transparent #000 transparent transparent;
     margin-left: 0;
@@ -31,7 +39,7 @@
     top:5px;
 }
 
-.tooltipify > span.icon.left
+.tooltipify.left > span.icon
 {
     border-color: transparent transparent transparent #000;
     margin-left: -3px;
