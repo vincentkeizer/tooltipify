@@ -13,6 +13,36 @@
 
     // Helper methods
     var _helper = {
+
+        // Create tooltip
+        createTooltip: function (data) {
+            var tooltip = $('<div />', {
+                'class': 'tooltipify hide ' + data.settings.position,
+                'css': {
+                    'position': 'absolute',
+                    'display': 'none',
+                    'opacity': '0'
+                }
+            }).append($('<span />', {
+                'text': data.title,
+                'class': 'text'
+            })).append($('<span />', {
+                'class': 'icon'
+            }));
+            return tooltip;
+        },
+
+        // Set position of tooltip
+        setPosition: function (tooltip, element, settings) {
+            var pos = element.position();
+            tooltip.css({
+                // The height of the tooltip does not seem to be correct, count height of all children.
+                'top': _helper.getYPosition(settings, element, tooltip),
+                'left': _helper.getXPosition(settings, element, tooltip)
+            });
+            return tooltip;
+        },
+
         // Gets the tooltip height.
         getTooltipHeigh: function (tooltip) {
             return tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight();
@@ -59,14 +89,13 @@
             var data = $this.data('tooltipify');
             var tooltip = data.tooltip;
             // We don't need to show a already visible tooltip.
-            if (tooltip.is(':visible')) { return; }
-            var settings = data.settings;
-            var pos = $this.position();
-            tooltip.css({
-                // The height of the tooltip does not seem to be correct, count height of all children.
-                'top': _helper.getYPosition(settings, $this, tooltip),
-                'left': _helper.getXPosition(settings, $this, tooltip)
-            });
+            if (tooltip && tooltip.length) { return; }
+            var tooltip = _helper.createTooltip(data);
+            // Save tooltip in data and add before element.
+            data.tooltip = tooltip;
+            $this.before(tooltip);
+            var settings = data.settings
+            _helper.setPosition(tooltip, $this, settings);
             // Create animation for animationProperty.
             var animation = { opacity: settings.opacity };
             if (settings.animationProperty) {
@@ -85,7 +114,7 @@
             var data = $this.data('tooltipify');
             var tooltip = data.tooltip;
             // We don't need to hide a already hidden tooltip.
-            if (!tooltip.is(':visible')) { return; }
+            if (!tooltip || !tooltip.length || !tooltip.is(':visible')) { return; }
             var settings = data.settings;
             // Create animation for animationProperty
             var animation = { opacity: 0 };
@@ -94,8 +123,8 @@
             }
             tooltip.removeClass('show')
                    .animate(animation, settings.animationDuration, function () {
-                       $(this).addClass('hide')
-                              .hide();
+                       $(this).remove();
+                       $this.data('tooltipify').tooltip = null;
                    });
         }
     };
@@ -123,25 +152,11 @@
                 // If the plugin hasn't been initialized yet
                 if (!data) {
                     // Create tooltip.
-                    var tooltip = $('<div />', {
-                        'class': 'tooltipify hide ' + settings.position,
-                        'css': {
-                            'position': 'absolute',
-                            'display': 'none',
-                            'opacity': '0'
-                        }
-                    }).append($('<span />', {
-                        'text': $this.attr('title'),
-                        'class': 'text'
-                    })).append($('<span />', {
-                        'class': 'icon' 
-                    }));
                     // Bind show and hide events to original event.
                     $this.bind(settings.openEvent, _events.show)
                          .bind(settings.closeEvent, _events.hide)
                          // Store all requiredn data.
                          .data('tooltipify', {
-                             tooltip: tooltip,
                              title: $this.attr('title'),
                              tabindex: $this.attr('tabindex'),
                              settings: settings
@@ -150,8 +165,6 @@
                     if (!$this.attr('tabindex')) {
                         $this.attr('tabindex', '0'); // Used for events like 'focus' and 'focusout'
                     }
-                    // Append tooltip to end of body.
-                    $('body').append(tooltip);
                 }
             });
         },
