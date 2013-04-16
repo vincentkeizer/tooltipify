@@ -3,24 +3,21 @@
  * Version:     0.1
  * Author:      Vincent Keizer (www.vicreative.nl)
  * Info:        www.vicreative.nl/projects/Tooltipify
- * 
+ *
  * Copyright 2012-2013 Vincent Keizer, all rights reserved.
  *
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * 
+ *
  */
 (function ($) {
-
     // Helper methods
-    var _helper = {
-
+    var helper = {
         // Create tooltip
         createTooltip: function (data) {
             var tooltip = $('<div />', {
                 'class': 'tooltipify hide ' + data.settings.position,
                 'css': {
                     'position': 'absolute',
-                    'display': 'none',
                     'opacity': '0'
                 }
             }).append($('<span />', {
@@ -29,22 +26,25 @@
             })).append($('<span />', {
                 'class': 'icon'
             }));
+            if (data.settings.width) {
+                tooltip.css('width', data.settings.width + 'px');
+            }
             return tooltip;
         },
 
         // Set position of tooltip
         setPosition: function (tooltip, element, settings) {
-            var pos = element.position();
             tooltip.css({
                 // The height of the tooltip does not seem to be correct, count height of all children.
-                'top': _helper.getYPosition(settings, element, tooltip),
-                'left': _helper.getXPosition(settings, element, tooltip)
+                'top': helper.getYPosition(settings, element, tooltip),
+                'left': helper.getXPosition(settings, element, tooltip)
             });
             return tooltip;
         },
 
         // Gets the tooltip height.
-        getTooltipHeigh: function (tooltip) {
+        getTooltipHeight: function (tooltip) {
+            console.log(tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight());
             return tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight();
         },
         // Gets the tooltip width.
@@ -58,13 +58,13 @@
             var pos = element.position();
             switch (settings.position) {
                 case 'left':
-                    return (pos.top + (element.height() / 2) + settings.offsetTop) - (_helper.getTooltipHeigh(tooltip) / 2);
+                    return (pos.top + (element.outerHeight() / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'right':
-                    return (pos.top + (element.height() / 2) + settings.offsetTop) - (_helper.getTooltipHeigh(tooltip) / 2);
+                    return (pos.top + (element.outerHeight() / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'bottom':
-                    return pos.top + (_helper.getTooltipHeigh(tooltip) + settings.offsetTop);
+                    return pos.top + (helper.getTooltipHeight(tooltip) + settings.offsetTop);
                 default:
-                    return pos.top - (_helper.getTooltipHeigh(tooltip) + settings.offsetTop);
+                    return pos.top - (helper.getTooltipHeight(tooltip) + settings.offsetTop);
             }
         },
         // Gets the X position for tooltip.
@@ -72,7 +72,7 @@
             var pos = element.position();
             switch (settings.position) {
                 case 'left':
-                    return (pos.left + settings.offsetLeft) - _helper.getTooltipWidth(tooltip);
+                    return (pos.left + settings.offsetLeft) - helper.getTooltipWidth(tooltip);
                 case 'right':
                     return pos.left + element.outerWidth() + tooltip.find('.icon').outerWidth() + settings.offsetLeft;
                 case 'bottom':
@@ -83,19 +83,19 @@
         },
     };
     // Tooltip events.
-    var _events = {
+    var events = {
         show: function () {
             var $this = $(this);
             var data = $this.data('tooltipify');
             var tooltip = data.tooltip;
             // We don't need to show a already visible tooltip.
             if (tooltip && tooltip.length) { return; }
-            var tooltip = _helper.createTooltip(data);
+            tooltip = helper.createTooltip(data);
             // Save tooltip in data and add before element.
-            data.tooltip = tooltip;
             $this.before(tooltip);
-            var settings = data.settings
-            _helper.setPosition(tooltip, $this, settings);
+            data.tooltip = tooltip.show();
+            var settings = data.settings;
+            helper.setPosition(tooltip, $this, settings);
             // Create animation for animationProperty.
             var animation = { opacity: settings.opacity };
             if (settings.animationProperty) {
@@ -103,8 +103,7 @@
                 tooltip.css(settings.animationProperty, orgValue - settings.animationOffset);
                 animation[settings.animationProperty] = '+=' + settings.animationOffset;
             }
-            tooltip.show()
-                   .removeClass('hide')
+            tooltip.removeClass('hide')
                    .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('show');
                    });
@@ -138,6 +137,7 @@
                 'offsetLeft': 0,
                 'offsetTop': 0,
                 'opacity': 0.8,
+                'width': null,
                 'animationProperty': 'left',
                 'animationOffset': 50,
                 'animationDuration': 100,
@@ -153,8 +153,8 @@
                 if (!data) {
                     // Create tooltip.
                     // Bind show and hide events to original event.
-                    $this.bind(settings.openEvent, _events.show)
-                         .bind(settings.closeEvent, _events.hide)
+                    $this.bind(settings.openEvent, events.show)
+                         .bind(settings.closeEvent, events.hide)
                          // Store all requiredn data.
                          .data('tooltipify', {
                              title: $this.attr('title'),
@@ -175,12 +175,12 @@
 					data = $this.data('tooltipify');
                 if (data) {
                     $(window).unbind('.tooltipify');
-                    $this.unbind(data.settings.openEvent, _events.show)
-                         .unbind(data.settings.closeEvent, _events.hide)
+                    $this.unbind(data.settings.openEvent, events.show)
+                         .unbind(data.settings.closeEvent, events.hide)
                          .attr('title', data.title)
                          .attr('tabindex', data.tabindex);
                     data.tooltip.remove();
-                    $this.removeData('tooltipify')
+                    $this.removeData('tooltipify');
                 }
             });
         },
