@@ -44,7 +44,6 @@
 
         // Gets the tooltip height.
         getTooltipHeight: function (tooltip) {
-            console.log(tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight());
             return tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight();
         },
         // Gets the tooltip width.
