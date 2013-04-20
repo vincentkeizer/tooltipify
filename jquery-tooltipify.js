@@ -15,7 +15,7 @@
         // Create tooltip
         createTooltip: function (data) {
             var tooltip = $('<div />', {
-                'class': 'tooltipify hide ' + data.settings.position,
+                'class': 'tooltipify hide',
                 'css': {
                     'position': 'absolute',
                     'opacity': '0'
@@ -34,11 +34,19 @@
 
         // Set position of tooltip
         setPosition: function (tooltip, element, settings) {
+            var position = settings.displayAware
+                                        ? helper.getTooltipPosition(tooltip, element, settings)
+                                        : settings.position;
+            if (settings.position) {
+                // remove old position, could have been changed because of the display awareness.
+                tooltip.removeClass(settings.position);
+            }
             tooltip.css({
                 // The height of the tooltip does not seem to be correct, count height of all children.
-                'top': helper.getYPosition(settings, element, tooltip),
-                'left': helper.getXPosition(settings, element, tooltip)
-            });
+                'top': helper.getYPosition(position, settings, element, tooltip),
+                'left': helper.getXPosition(position, settings, element, tooltip)
+            }).addClass(position);
+            settings.tooltip = tooltip;
             return tooltip;
         },
 
@@ -52,10 +60,48 @@
             return tooltip.outerWidth() + (icon.hasClass("left") || icon.hasClass('right') ? icon.outerWidth() : 0);
         },
 
-        // Gets the Y position for tooltip.
-        getYPosition: function (settings, element, tooltip) {
+        getTooltipPosition: function (tooltip, element, settings) {
+            var position = settings.position;
+            var windowHeight = $(window).height();
+            var windowWidth = $(window).width();
+            var tooltipWidth = helper.getTooltipWidth(tooltip);
+            var tooltipHeight = helper.getTooltipHeight(tooltip);
             var pos = element.position();
-            switch (settings.position) {
+            var leftPos = pos.left;
+            var topPos = pos.top;
+            switch (position) {
+                case "left":
+                    if (leftPos < tooltipWidth && windowWidth - leftPos > leftPos) {
+                        // Not enough space on the left and more space on the right.
+                        position = "right";
+                    }
+                    break;
+                case "right":
+                    if (windowWidth - leftPos > tooltipWidth && leftPos > windowWidth - leftPos) {
+                        // Not enough space on the right and more space on the left.
+                        position = "left";
+                    }
+                    break;
+                case "bottom":
+                    if (windowHeight - topPos > tooltipHeight && topPos > windowHeight - topPos) {
+                        // Not enough space on the bottom and more space on the top.
+                        position = "top";
+                    }
+                    break;
+                default:
+                    if (topPos < tooltipHeight && windowHeight - topPos > topPos) {
+                        // Not enough space on the top and more space on the bottom.
+                        position = "bottom";
+                    }
+                    break;
+            }
+            return position;
+        },
+
+        // Gets the Y position for tooltip.
+        getYPosition: function (position, settings, element, tooltip) {
+            var pos = element.position();
+            switch (position) {
                 case 'left':
                     return (pos.top + (element.outerHeight() / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'right':
@@ -67,9 +113,9 @@
             }
         },
         // Gets the X position for tooltip.
-        getXPosition: function (settings, element, tooltip) {
+        getXPosition: function (position, settings, element, tooltip) {
             var pos = element.position();
-            switch (settings.position) {
+            switch (position) {
                 case 'left':
                     return (pos.left + settings.offsetLeft) - helper.getTooltipWidth(tooltip);
                 case 'right':
@@ -106,6 +152,7 @@
                    .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('show');
                    });
+            $(window).bind("resize", { element: $this }, events.reInit);
         },
         hide: function () {
             var $this = $(this);
@@ -124,6 +171,16 @@
                        $(this).remove();
                        $this.data('tooltipify').tooltip = null;
                    });
+            $(window).unbind("resize", events.reInit);
+        },
+        reInit: function (event) {
+            var element = event.data.element;
+            if (element) {
+                var data = event.data.element.data('tooltipify');
+                if (data) {
+                    helper.setPosition(data.tooltip, element, data.settings);
+                }
+            }
         }
     };
     // Tooltip methods.
@@ -142,6 +199,7 @@
                 'animationDuration': 100,
                 'openEvent': 'mouseover',
                 'closeEvent': 'mouseout',
+                'displayAware': true
             }, options);
 
             return $(this).each(function () {
