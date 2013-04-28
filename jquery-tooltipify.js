@@ -1,6 +1,6 @@
 /*
  * File:        jquery-tooltipify.js
- * Version:     0.1
+ * Version:     0.2
  * Author:      Vincent Keizer (www.vicreative.nl)
  * Info:        www.vicreative.nl/projects/Tooltipify
  *
@@ -197,8 +197,8 @@
                 'animationProperty': 'left',
                 'animationOffset': 50,
                 'animationDuration': 100,
-                'openEvent': 'mouseover',
-                'closeEvent': 'mouseout',
+                'showEvent': 'mouseover',
+                'hideEvent': 'mouseout',
                 'displayAware': true
             }, options);
 
@@ -210,8 +210,8 @@
                 if (!data) {
                     // Create tooltip.
                     // Bind show and hide events to original event.
-                    $this.bind(settings.openEvent, events.show)
-                         .bind(settings.closeEvent, events.hide)
+                    $this.bind(settings.showEvent, events.show)
+                         .bind(settings.hideEvent, events.hide)
                          // Store all requiredn data.
                          .data('tooltipify', {
                              title: $this.attr('title'),
@@ -232,8 +232,8 @@
 					data = $this.data('tooltipify');
                 if (data) {
                     $(window).unbind('.tooltipify');
-                    $this.unbind(data.settings.openEvent, events.show)
-                         .unbind(data.settings.closeEvent, events.hide)
+                    $this.unbind(data.settings.showEvent, events.show)
+                         .unbind(data.settings.hideEvent, events.hide)
                          .attr('title', data.title)
                          .attr('tabindex', data.tabindex);
                     data.tooltip.remove();
@@ -246,7 +246,7 @@
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    $(this).trigger(data.settings.openEvent);
+                    $(this).trigger(data.settings.showEvent);
                 }
             });
         },
@@ -255,7 +255,7 @@
             return this.each(function () {
                 var data = $(this).data('tooltipify');
                 if (data) {
-                    $(this).trigger(data.settings.closeEvent);
+                    $(this).trigger(data.settings.hideEvent);
                 }
             });
         }
