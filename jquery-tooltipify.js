@@ -20,12 +20,20 @@
                     'position': 'absolute',
                     'opacity': '0'
                 }
-            }).append($('<span />', {
-                'text': data.title,
-                'class': 'text'
-            })).append($('<span />', {
-                'class': 'icon'
+            }).append($('<div />', {
+                    'class': 'content'
+                // When content is provided, select content, when not select title attribute
+                }).append(data.settings.content 
+                    ? data.settings.content 
+                    : $('<span />', {
+                       'text': data.title,
+                       'class': 'text'
+                      })
+                )
+            ).append($('<span />', {
+                'class' : 'icon'
             }));
+
             if (data.settings.width) {
                 tooltip.css('width', data.settings.width + 'px');
             }
@@ -41,23 +49,23 @@
                 // remove old position, could have been changed because of the display awareness.
                 tooltip.removeClass(settings.position);
             }
-            tooltip.css({
-                // The height of the tooltip does not seem to be correct, count height of all children.
-                'top': helper.getYPosition(position, settings, element, tooltip),
-                'left': helper.getXPosition(position, settings, element, tooltip)
-            }).addClass(position);
+            tooltip.addClass(position)
+                    .css({
+                        // The height of the tooltip does not seem to be correct, count height of all children.
+                        'top': helper.getYPosition(position, settings, element, tooltip),
+                        'left': helper.getXPosition(position, settings, element, tooltip)
+                    });
             settings.tooltip = tooltip;
             return tooltip;
         },
 
         // Gets the tooltip height.
         getTooltipHeight: function (tooltip) {
-            return tooltip.children('.text').outerHeight() + tooltip.children('.icon').outerHeight();
+            return tooltip.outerHeight(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? 0 : tooltip.children('.icon').outerWidth(true));
         },
         // Gets the tooltip width.
         getTooltipWidth: function (tooltip) {
-            var icon = tooltip.find('.icon');
-            return tooltip.outerWidth() + (icon.hasClass("left") || icon.hasClass('right') ? icon.outerWidth() : 0);
+            return tooltip.outerWidth(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? (tooltip.children('.icon').outerWidth(true) / 2) : 0);
         },
 
         getTooltipPosition: function (tooltip, element, settings) {
@@ -69,29 +77,30 @@
             var pos = element.position();
             var leftPos = pos.left;
             var topPos = pos.top;
+            var scrollTop = $(window).scrollTop();
             switch (position) {
-                case "left":
+                case 'left':
                     if (leftPos < tooltipWidth && windowWidth - leftPos > leftPos) {
                         // Not enough space on the left and more space on the right.
-                        position = "right";
+                        position = 'right';
                     }
                     break;
-                case "right":
+                case 'right':
                     if (windowWidth - leftPos > tooltipWidth && leftPos > windowWidth - leftPos) {
                         // Not enough space on the right and more space on the left.
-                        position = "left";
+                        position = 'left';
                     }
                     break;
-                case "bottom":
-                    if (windowHeight - topPos > tooltipHeight && topPos > windowHeight - topPos) {
+                case 'bottom':
+                    if (topPos > windowHeight + scrollTop - tooltipHeight) {
                         // Not enough space on the bottom and more space on the top.
-                        position = "top";
+                        position = 'top';
                     }
                     break;
                 default:
-                    if (topPos < tooltipHeight && windowHeight - topPos > topPos) {
+                    if (topPos < tooltipHeight + scrollTop) {
                         // Not enough space on the top and more space on the bottom.
-                        position = "bottom";
+                        position = 'bottom';
                     }
                     break;
             }
@@ -103,13 +112,13 @@
             var pos = element.position();
             switch (position) {
                 case 'left':
-                    return (pos.top + (element.outerHeight() / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
+                    return (pos.top + (element.outerHeight(true) / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'right':
-                    return (pos.top + (element.outerHeight() / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
+                    return (pos.top + (element.outerHeight(true) / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'bottom':
-                    return pos.top + (helper.getTooltipHeight(tooltip) + settings.offsetTop);
+                    return pos.top + element.outerHeight(true) + settings.offsetTop + (tooltip.children('.icon').outerHeight(true) / 2);
                 default:
-                    return pos.top - (helper.getTooltipHeight(tooltip) + settings.offsetTop);
+                    return pos.top - (helper.getTooltipHeight(tooltip) + settings.offsetTop) + (tooltip.children('.icon').outerHeight(true) / 2);
             }
         },
         // Gets the X position for tooltip.
@@ -119,13 +128,13 @@
                 case 'left':
                     return (pos.left + settings.offsetLeft) - helper.getTooltipWidth(tooltip);
                 case 'right':
-                    return pos.left + element.outerWidth() + tooltip.find('.icon').outerWidth() + settings.offsetLeft;
+                    return pos.left + element.outerWidth(true) + (tooltip.children('.icon').outerWidth(true) / 2) + settings.offsetLeft;
                 case 'bottom':
                     return pos.left + settings.offsetLeft;
                 default:
                     return pos.left + settings.offsetLeft;
             }
-        },
+        }
     };
     // Tooltip events.
     var events = {
@@ -152,7 +161,7 @@
                    .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('show');
                    });
-            $(window).bind("resize", { element: $this }, events.reInit);
+            $(window).bind('resize', { element: $this }, events.reInit);
         },
         hide: function () {
             var $this = $(this);
@@ -171,7 +180,7 @@
                        $(this).remove();
                        $this.data('tooltipify').tooltip = null;
                    });
-            $(window).unbind("resize", events.reInit);
+            $(window).unbind('resize', events.reInit);
         },
         reInit: function (event) {
             var element = event.data.element;
@@ -199,7 +208,8 @@
                 'animationDuration': 100,
                 'showEvent': 'mouseover',
                 'hideEvent': 'mouseout',
-                'displayAware': true
+                'displayAware': true,
+                'content': null
             }, options);
 
             return $(this).each(function () {
@@ -221,6 +231,9 @@
 
                     if (!$this.attr('tabindex')) {
                         $this.attr('tabindex', '0'); // Used for events like 'focus' and 'focusout'
+                    }
+                    if ($this.css('position') == 'static') {
+                        $this.css('position', 'relative');
                     }
                 }
             });

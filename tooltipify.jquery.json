@@ -1,9 +1,9 @@
 {
 	"name": "tooltipify",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"title": "Tooltipify",
-	"description": "The tooltipify plugin creates a slide in stylable tooltip to replace the default browser tooltip.",
-	"keywords": [ "tooltipify", "tooltip", "title"  ],
+	"description": "The tooltipify plugin creates an animatable and stylable tooltip to replace the default browser tooltip or to display html content.",
+	"keywords": [ "tooltipify", "tooltip", "title", "html"  ],
 	"author": {
 		"name": "Vincent Keizer",
 		"email": "vincent@vicreative.nl",
