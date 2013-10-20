@@ -1,6 +1,6 @@
 {
 	"name": "tooltipify",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"title": "Tooltipify",
 	"description": "The tooltipify plugin creates an animatable and stylable tooltip to replace the default browser tooltip or to display html content.",
 	"keywords": [ "tooltipify", "tooltip", "title", "html"  ],
