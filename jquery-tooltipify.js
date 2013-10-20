@@ -15,7 +15,7 @@
         // Create tooltip
         createTooltip: function (data) {
             var tooltip = $('<div />', {
-                'class': 'tooltipify hide',
+                'class': 'tooltipify hide' + (data.settings.cssClass ? ' ' + data.settings.cssClass : ''),
                 'css': {
                     'position': 'absolute',
                     'opacity': '0'
@@ -209,7 +209,8 @@
                 'showEvent': 'mouseover',
                 'hideEvent': 'mouseout',
                 'displayAware': true,
-                'content': null
+                'content': null,
+				'cssClass' : ''
             }, options);
 
             return $(this).each(function () {
