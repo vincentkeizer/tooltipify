@@ -15,7 +15,7 @@
         // Create tooltip
         createTooltip: function (data) {
             var tooltip = $('<div />', {
-                'class': 'tooltipify hide' + (data.settings.cssClass ? ' ' + data.settings.cssClass : ''),
+                'class': 'tooltipify tooltipify-hide' + (data.settings.cssClass ? ' ' + data.settings.cssClass : ''),
                 'css': {
                     'position': 'absolute',
                     'opacity': '0'
@@ -61,7 +61,7 @@
 
         // Gets the tooltip height.
         getTooltipHeight: function (tooltip) {
-            return tooltip.outerHeight(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? 0 : tooltip.children('.icon').outerWidth(true));
+            return tooltip.outerHeight(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? 0 : tooltip.children('.icon').outerHeight(true));
         },
         // Gets the tooltip width.
         getTooltipWidth: function (tooltip) {
@@ -157,9 +157,9 @@
                 tooltip.css(settings.animationProperty, orgValue - settings.animationOffset);
                 animation[settings.animationProperty] = '+=' + settings.animationOffset;
             }
-            tooltip.removeClass('hide')
+            tooltip.removeClass('tooltipify-hide')
                    .animate(animation, settings.animationDuration, function () {
-                       $(this).addClass('show');
+                       $(this).addClass('tooltipify-show');
                    });
             $(window).bind('resize', { element: $this }, events.reInit);
         },
@@ -175,7 +175,7 @@
             if (settings.animationProperty) {
                 animation[settings.animationProperty] = '-=' + settings.animationOffset;
             }
-            tooltip.removeClass('show')
+            tooltip.removeClass('tooltipify-show')
                    .animate(animation, settings.animationDuration, function () {
                        $(this).remove();
                        $this.data('tooltipify').tooltip = null;
