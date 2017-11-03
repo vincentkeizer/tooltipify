@@ -250,7 +250,9 @@
                          .unbind(data.settings.hideEvent, events.hide)
                          .attr('title', data.title)
                          .attr('tabindex', data.tabindex);
-                    data.tooltip.remove();
+                    if (data.tooltip) {
+                        data.tooltip.remove();
+                    }
                     $this.removeData('tooltipify');
                 }
             });
