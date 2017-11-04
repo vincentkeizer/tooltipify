@@ -144,6 +144,11 @@
             var tooltip = data.tooltip;
             // We don't need to show a already visible tooltip.
             if (tooltip && tooltip.length) { return; }
+            var cssPosition = $this.css('position');
+            if (cssPosition == 'static') {
+                data.cssPosition = cssPosition;
+                $this.css('position', 'relative');
+            }
             tooltip = helper.createTooltip(data);
             // Save tooltip in data and add before element.
             $this.before(tooltip);
@@ -169,6 +174,10 @@
             var tooltip = data.tooltip;
             // We don't need to hide a already hidden tooltip.
             if (!tooltip || !tooltip.length || !tooltip.is(':visible')) { return; }
+            if (data.cssPosition) {
+                $this.css('position', data.cssPosition);
+                data.cssPosition = null;
+            }
             var settings = data.settings;
             // Create animation for animationProperty
             var animation = { opacity: 0 };
@@ -233,9 +242,6 @@
                     if (!$this.attr('tabindex')) {
                         $this.attr('tabindex', '0'); // Used for events like 'focus' and 'focusout'
                     }
-                    if ($this.css('position') == 'static') {
-                        $this.css('position', 'relative');
-                    }
                 }
             });
         },
@@ -252,6 +258,9 @@
                          .attr('tabindex', data.tabindex);
                     if (data.tooltip) {
                         data.tooltip.remove();
+                    }
+                    if (data.cssPosition) {
+                        $this.css('position', data.cssPosition);
                     }
                     $this.removeData('tooltipify');
                 }
