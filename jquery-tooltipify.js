@@ -65,7 +65,7 @@
         },
         // Gets the tooltip width.
         getTooltipWidth: function (tooltip) {
-            return tooltip.outerWidth(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? (tooltip.children('.icon').outerWidth(true) / 2) : 0);
+            return tooltip.outerWidth(true) + (tooltip.hasClass('left') || tooltip.hasClass('right') ? (tooltip.children('.icon').outerWidth(true)) : 0);
         },
 
         getTooltipPosition: function (tooltip, element, settings) {
@@ -116,9 +116,9 @@
                 case 'right':
                     return (pos.top + (element.outerHeight(true) / 2) + settings.offsetTop) - (helper.getTooltipHeight(tooltip) / 2);
                 case 'bottom':
-                    return pos.top + element.outerHeight(true) + settings.offsetTop + (tooltip.children('.icon').outerHeight(true) / 2);
-                default:
-                    return pos.top - (helper.getTooltipHeight(tooltip) + settings.offsetTop) + (tooltip.children('.icon').outerHeight(true) / 2);
+                    return pos.top + element.outerHeight(true) + settings.offsetTop + tooltip.children('.icon').outerHeight(true);
+                default:                    
+                    return pos.top - (helper.getTooltipHeight(tooltip) + settings.offsetTop);
             }
         },
         // Gets the X position for tooltip.
@@ -128,7 +128,7 @@
                 case 'left':
                     return (pos.left + settings.offsetLeft) - helper.getTooltipWidth(tooltip);
                 case 'right':
-                    return pos.left + element.outerWidth(true) + (tooltip.children('.icon').outerWidth(true) / 2) + settings.offsetLeft;
+                    return pos.left + element.outerWidth(true) + (tooltip.children('.icon').outerWidth(true)) + settings.offsetLeft;
                 case 'bottom':
                     return pos.left + settings.offsetLeft;
                 default:
@@ -165,7 +165,8 @@
             tooltip.removeClass('tooltipify-hide')
                    .animate(animation, settings.animationDuration, function () {
                        $(this).addClass('tooltipify-show');
-                   });
+                });
+
             $(window).bind('resize', { element: $this }, events.reInit);
         },
         hide: function () {

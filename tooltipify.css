@@ -2,6 +2,7 @@
 {
     background: #000;
     border-radius: 5px;
+    z-index: 1000;
 }
 
     .tooltipify.left
@@ -11,46 +12,40 @@
 
     .tooltipify > span.icon
     {
-        -moz-border-bottom-colors: none;
-        -moz-border-left-colors: none;
-        -moz-border-right-colors: none;
-        -moz-border-top-colors: none;
-        border-color: #000 transparent transparent;
-        border-image: none;
-        border-right: 7px solid transparent;
-        border-style: solid;
-        border-width: 7px;
-        content: " ";
+        border: 7px solid transparent;
         height: 0;
-        margin-left: 3px;
         position: absolute;
-        top: 100%;
         width: 0;
-        z-index:-1;
     }
 
-    .tooltipify.bottom > span.icon
-    {
-        border-color: transparent transparent #000;
-        top: -13px;
+    .tooltipify.top > span.icon {
+        margin-left: 3px;
+        border-bottom: 0;
+        border-top-color: #000;
+        top: 100%;
     }
 
-    .tooltipify.right > span.icon
-    {
-        border-color: transparent #000 transparent transparent;
-        margin-left: 0;
-        left: -12px;
-        top: 50%;
+    .tooltipify.bottom > span.icon {
+        margin-left: 3px;
+        border-top: 0;
+        border-bottom-color: #000;
+        top: -7px;
+    }
+
+    .tooltipify.right > span.icon {
         margin-top: -7px;
+        border-left: 0;
+        border-right-color: #000;
+        top: 50%;
+        left: -7px;
     }
 
-    .tooltipify.left > span.icon
-    {
-        border-color: transparent transparent transparent #000;
-        margin-left: -2px;
+    .tooltipify.left > span.icon {
+        margin-top: -7px;
+        border-right: 0;
+        border-left-color: #000;
         left: 100%;
         top: 50%;
-        margin-top: -7px;
     }
 
     .tooltipify > .content
