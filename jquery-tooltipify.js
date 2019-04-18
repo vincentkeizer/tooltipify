@@ -9,7 +9,15 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  *
  */
-(function ($) {
+(function(factory){
+    if (typeof define === 'function' && define.amd) {
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+}(function ($) {
     // Helper methods
     var helper = {
         // Create tooltip
@@ -298,4 +306,4 @@
             $.error('Method ' + method + ' does not exist on jQuery tooltipify');
         }
     };
-})(jQuery);
+}));
