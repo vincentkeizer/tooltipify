@@ -4,6 +4,32 @@
 
 Please visit [www.vicreative.nl](http://www.vicreative.nl/Projects/Tooltipify) for full documentation and demo.
 
+## Install
+
+### npm
+
+```
+npm install jquery-tooltipify
+```
+
+Import the module:
+
+```
+import "jquery-tooltipify";
+```
+
+#### scss
+
+```
+import "jquery-tooltipify/src/tooltipify.scss";
+```
+
+#### css
+
+```
+import "jquery-tooltipify/lib/tooltipify.css";
+```
+
 ## Options
 
 ### animationDuration 

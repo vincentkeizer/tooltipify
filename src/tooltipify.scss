@@ -3,14 +3,8 @@
     background: #000;
     border-radius: 5px;
     z-index: 1000;
-}
 
-    .tooltipify.left
-    {
-        margin-left: -10px;
-    }
-
-    .tooltipify > span.icon
+     > span.icon
     {
         border: 7px solid transparent;
         height: 0;
@@ -18,21 +12,26 @@
         width: 0;
     }
 
-    .tooltipify.top > span.icon {
+    &.left
+    {
+        margin-left: -10px;
+    }
+
+    &.top > span.icon {
         margin-left: 3px;
         border-bottom: 0;
         border-top-color: #000;
         top: 100%;
     }
 
-    .tooltipify.bottom > span.icon {
+    &.bottom > span.icon {
         margin-left: 3px;
         border-top: 0;
         border-bottom-color: #000;
         top: -7px;
     }
 
-    .tooltipify.right > span.icon {
+    &.right > span.icon {
         margin-top: -7px;
         border-left: 0;
         border-right-color: #000;
@@ -40,7 +39,7 @@
         left: -7px;
     }
 
-    .tooltipify.left > span.icon {
+    &.left > span.icon {
         margin-top: -7px;
         border-right: 0;
         border-left-color: #000;
@@ -48,10 +47,11 @@
         top: 50%;
     }
 
-    .tooltipify > .content
+    > .content
     {
         color: #FFF;
         font-size: 11px;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         padding: 10px;
     }
+}
