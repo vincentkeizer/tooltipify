@@ -26,7 +26,7 @@ Sets the offset used in the animation propery to animate for showing.
 **default**: 50.
 
 ```javascript
-$("[title\]").tooltipify({ animationDuration : 500 });
+$("[title]").tooltipify({ animationDuration : 500 });
 ```
 
 
