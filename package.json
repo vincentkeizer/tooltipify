@@ -1,6 +1,6 @@
 {
   "name": "jquery-tooltipify",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "jQuery Tooltipify creates a slide in stylable tooltip to replace the default browser tooltip.",
   "main": "lib/jquery-tooltipify.min.js",
   "scripts": {
